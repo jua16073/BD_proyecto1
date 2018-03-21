@@ -1,5 +1,50 @@
-<form method="post" action="" novalidate>
-  {% csrf_token %}
-  {{ form }}
-  <button type="submit">Submit</button>
-</form>
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- your webpage info goes here -->
+
+    <title>Auto Repuestos Villeda</title>
+
+	<meta name="author" content="Rodrigo Alvarado" />
+	<meta name="description" content="Prueba para el proyecto que ya valio 20" />
+
+<!-- you should always add your stylesheet (css) in the head tag so that it starts loading before the page html is being displayed -->
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+</head>
+<body>
+
+<!-- webpage content goes here in the body -->
+
+	<div id="todo">
+		<div id="titulo">
+			<h1><a href="/" id="logoLink">Auto Repuestos Villeda</a></h1>
+		</div>
+		<div id="menu">
+			<ul>
+				<li><a href="#/home.html">Catalogo</a></li>
+				<li><a href="#/about.html">Clientes</a></li>
+				<li><a href="#/contact.html">Compras</a></li>
+        <li><a href="#/contact.html">Proveedores</a></li>
+			</ul>
+		</div>
+		<div id="contenido">
+			<h2>Ingreso de compras</h2>
+			<p>
+        <form method="post" action="" novalidate>
+          {% csrf_token %}
+          {{ form }}
+          <button type="submit">Submit</button>
+        </form>
+			</p>
+		</div>
+		<div id="footer">
+			<p>
+				Valiendo mucha <a href="/" target="_blank">VERGA</a>
+			</p>
+		</div>
+	</div>
+</body>
+</html>

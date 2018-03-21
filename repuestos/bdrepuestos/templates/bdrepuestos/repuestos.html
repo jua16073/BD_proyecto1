@@ -20,20 +20,15 @@
 		</div>
 		<div id="menu">
 			<ul>
-				<li><a href="{% url 'catalogo' %}">Catalogo</a></li>
+				<li><a href="{% url 'home' %}">Ingresar Compras</a></li>
 				<li><a href="{% url 'clientes' %}">Clientes</a></li>
 				<li><a href="{% url 'compras' %}">Compras</a></li>
         <li><a href="{% url 'proveedores' %}">Proveedores</a></li>
 			</ul>
 		</div>
 		<div id="contenido">
-			<h2>Ingreso de compras</h2>
+			<h2>Catalogo</h2>
 			<p>
-        <form method="post" action="" novalidate>
-          {% csrf_token %}
-          {{ form }}
-          <button type="submit">Submit</button>
-        </form>
 			</p>
 		</div>
 		<div id="footer">

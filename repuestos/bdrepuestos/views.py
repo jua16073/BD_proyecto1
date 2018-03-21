@@ -24,3 +24,15 @@ def home(request):
 
 
     return render(request, 'bdrepuestos/home.html', {'form': form})
+
+def catalogo(request):
+    return render(request, 'bdrepuestos/repuestos.html')
+
+def clientes(request):
+    return render(request, 'bdrepuestos/clientes.html')
+
+def compras(request):
+    return render(request, 'bdrepuestos/compras.html')
+
+def proveedores(request):
+    return render(request, 'bdrepuestos/proveedores.html')
