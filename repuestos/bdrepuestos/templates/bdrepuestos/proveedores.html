@@ -28,7 +28,15 @@
 		</div>
 		<div id="contenido">
 			<h2>Proveedores</h2>
+      <form method="post" action="" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+      </form>
 			<p>
+    {% for thing in things %}
+        <p>{{ thing.nombre }}</p>
+    {% endfor %}
 			</p>
 		</div>
 		<div id="footer">

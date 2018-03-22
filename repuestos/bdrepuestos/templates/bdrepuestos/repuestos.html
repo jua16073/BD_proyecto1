@@ -27,9 +27,26 @@
 			</ul>
 		</div>
 		<div id="contenido">
-			<h2>Catalogo</h2>
-			<p>
+      <h2>Catalogo</h2>
+      <p>
+        <form method="post" action="" novalidate>
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit">Submit</button>
+        </form>
+      </p>
+      <p>
+        {% ifequal paso 1%}
+        {% for thing in things %}
+            <p><a href="{%url 'detalle_repuesto' thing.0%}">{{ thing.1 }}</a></p>
+        {% endfor %}
+        {% else %}
+        {% for thing in things %}
+            <p><a href="{%url 'detalle_repuesto' thing.id%}">{{ thing.categoria }}</a></p>
+        {% endfor %}
+        {% endifequal %}
 			</p>
+
 		</div>
 		<div id="footer">
 			<p>
