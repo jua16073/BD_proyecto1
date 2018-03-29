@@ -10,28 +10,29 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 def home(request):
-    form = ContactForm(request.POST)
+    #INGRESO DE Compras
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/home.html', {'form': ContactForm(modelo=0) })
+    form = ContactForm(request.POST, modelo=0)
     if form.is_valid():
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         x.execute(form.cleaned_data.get('query'))
         row=x.fetchone()
-        for p in  row:
-            print (p.nombre)
-        #for p in
-        #Choice.objects.raw(form.cleaned_data.get('query')):
-            #print(p)
-
-
     return render(request, 'bdrepuestos/home.html', {'form': form})
 
+#CATALOGO DE Repuestos
 def catalogo(request):
-    form = ContactForm(request.POST)
+    if request.method == 'GET':
+        paso = 0
+        things = Producto.objects.all()
+        return render(request, 'bdrepuestos/repuestos.html', {'paso':paso, 'form': ContactForm(modelo=2), 'things': things})
+    form = ContactForm(request.POST, modelo=2)
     if form.is_valid():
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_producto WHERE categoria LIKE '"+form.cleaned_data.get('query')+"'")
+            x.execute("SELECT * FROM bdrepuestos_producto WHERE CAST("+form.cleaned_data.get('Por') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%'")
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -45,13 +46,18 @@ def catalogo(request):
         'things': things, 'form': form, 'paso':paso
     })
 
+#LISTA DE Clientes
 def clientes(request):
-    form = ContactForm(request.POST)
+    if request.method == 'GET':
+        paso = 0
+        things = Cliente.objects.all()
+        return render(request, 'bdrepuestos/clientes.html', {'paso':paso, 'form': ContactForm(modelo=0), 'things': things})
+    form = ContactForm(request.POST, modelo=0)
     if form.is_valid():
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_cliente WHERE nombre LIKE '"+form.cleaned_data.get('query')+"'")
+            x.execute("SELECT * FROM bdrepuestos_cliente WHERE CAST("+form.cleaned_data.get('Por') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%'")
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -65,13 +71,18 @@ def clientes(request):
         'things': things, 'form': form, 'paso':paso
     })
 
+#LISTA DE Proveedores
 def proveedores(request):
-    form = ContactForm(request.POST)
+    if request.method == 'GET':
+        paso = 0
+        things = Proveedor.objects.all()
+        return render(request, 'bdrepuestos/proveedores.html', {'paso':paso, 'form': ContactForm(modelo=3), 'things': things})
+    form = ContactForm(request.POST, modelo=3)
     if form.is_valid():
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM Proveedor WHERE nombre LIKE '"+form.cleaned_data.get('query')+"'")
+            x.execute("SELECT * FROM bdrepuestos_proveedor WHERE CAST("+form.cleaned_data.get('Por') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%'")
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -85,13 +96,18 @@ def proveedores(request):
         'things': things, 'form': form, 'paso':paso
     })
 
+#LISTA DE Compras
 def compras(request):
-    form = ContactForm(request.POST)
+    if request.method == 'GET':
+        paso = 0
+        things = Venta.objects.all()
+        return render(request, 'bdrepuestos/compras.html', {'paso':paso, 'form': ContactForm(modelo=4), 'things': things})
+    form = ContactForm(request.POST, modelo=4)
     if form.is_valid():
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_venta WHERE vendedor LIKE '"+form.cleaned_data.get('query')+"'")
+            x.execute("SELECT * FROM bdrepuestos_venta WHERE CAST(" + form.cleaned_data.get('Por') + " AS TEXT) LIKE '"+form.cleaned_data.get('query')+"'")
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -100,7 +116,7 @@ def compras(request):
 
     else:
         paso = 0
-        things = Cliente.objects.all()
+        things = Venta.objects.all()
     return render(request, 'bdrepuestos/compras.html', {
         'things': things, 'form': form, 'paso':paso
     })
@@ -117,3 +133,10 @@ def detalle_repuesto(request, producto_id):
 def detalle_proveedor(request, proveedor_id):
     cliente = get_object_or_404(Proveedor, pk=cliente_id)
     return render(request, 'bdrepuestos/detalles_cliente.html', {'cliente':cliente})
+
+def detalle_compra(request, venta_id):
+    compra = get_object_or_404(Venta, pk=venta_id)
+    x=connection.cursor()
+    x.execute("SELECT * FROM bdrepuestos_lineaventa WHERE venta_id = '"+str(compra.id)+"'")
+    detalles = x.fetchall()
+    return render(request, 'bdrepuestos/detalles_compra.html', {'compra':compra, 'detalles':detalles})

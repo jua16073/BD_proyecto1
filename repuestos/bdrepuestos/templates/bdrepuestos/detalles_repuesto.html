@@ -16,7 +16,7 @@
 
 	<div id="todo">
 		<div id="titulo">
-			<h1><a href="/" id="logoLink">Auto Repuestos Villeda</a></h1>
+			<h1><a href="{% url 'home' %}" id="logoLink">Auto Repuestos Villeda</a></h1>
 		</div>
 		<div id="menu">
 			<ul>
@@ -24,17 +24,21 @@
 			</ul>
 		</div>
 		<div id="contenido">
-			<h2>{{repuesto.categoria}}</h2>
+			<h2>{{repuesto.nombre}}</h2>
+      <hr>
+      <p>Categoria: {{repuesto.categoria}}</p>
       <p>Precios:</p>
-      <p>A : {{repuesto.precioA}}</p>
-      <p>B : {{repuesto.precioB}}</p>
-      <p>C : {{repuesto.precioC}}</p>
+      <ul>
+      <li>A : {{repuesto.precioA}}</li>
+      <li>B : {{repuesto.precioB}}</li>
+      <li>C : {{repuesto.precioC}}</li>
+      </ul>
       <p>Disponibilidad : {{repuesto.disponibilidad}}</p>
       <p>Marca: {{repuesto.marca}}</p>
 		</div>
 		<div id="footer">
 			<p>
-				Valiendo mucha <a href="/" target="_blank">VERGA</a>
+				Desarrollado por: <a href="/" target="_blank">RRC</a>
 			</p>
 		</div>
 	</div>

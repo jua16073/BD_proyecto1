@@ -16,7 +16,7 @@
 
 	<div id="todo">
 		<div id="titulo">
-			<h1><a href="/" id="logoLink">Auto Repuestos Villeda</a></h1>
+			<h1><a href="{% url 'home' %}" id="logoLink">Auto Repuestos Villeda</a></h1>
 		</div>
 		<div id="menu">
 			<ul>
@@ -31,10 +31,12 @@
       <p>
         <form method="post" action="" novalidate>
           {% csrf_token %}
-          {{ form.as_p }}
+          {{ form }}
           <button type="submit">Submit</button>
         </form>
       </p>
+      <br></br>
+      <hr>
       <p>
         {% ifequal paso 1%}
         {% for thing in things %}
@@ -42,7 +44,7 @@
         {% endfor %}
         {% else %}
         {% for thing in things %}
-            <p><a href="{%url 'detalle_repuesto' thing.id%}">{{ thing.categoria }}</a></p>
+            <p><a href="{%url 'detalle_repuesto' thing.id%}">{{ thing.nombre }}</a></p>
         {% endfor %}
         {% endifequal %}
 			</p>
@@ -50,7 +52,7 @@
 		</div>
 		<div id="footer">
 			<p>
-				Valiendo mucha <a href="/" target="_blank">VERGA</a>
+				Desarrollado por: <a href="/" target="_blank">RRC</a>
 			</p>
 		</div>
 	</div>

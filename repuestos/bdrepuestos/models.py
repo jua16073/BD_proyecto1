@@ -5,21 +5,27 @@ from django.db import models
 
 class Proveedor(models.Model):
     nombre = models.TextField()
+    def __str__(self):
+        return self.nombre
 
 class Vendedor(models.Model):
-    nombre = models.TextField()
+    nombre = models.CharField(max_length = 200)
+    contrasena=models.CharField(max_length = 200)
     total_ventas = models.FloatField()
     def __str__(self):
         return self.nombre
 
 class Producto(models.Model):
-    categoria=models.TextField()
+    nombre=models.CharField(max_length = 200)
+    categoria=models.CharField(max_length = 200)
     precioA = models.FloatField(default = 0)
     precioB = models.FloatField(default = 0)
     precioC = models.FloatField(default = 0)
     disponibilidad = models.IntegerField(default = 0)
     marca = models.TextField()
     id_Proveedor = models.ForeignKey(Proveedor, on_delete = models.CASCADE)
+    def __str__(self):
+        return self.nombre
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length = 200)
@@ -29,7 +35,10 @@ class Cliente(models.Model):
     tipo = models.CharField(max_length = 1)
     direccion = models.TextField()
     nit = models.CharField(max_length = 20)
+    twitter=models.CharField(max_length = 40)
     fecha_de_comienzo=models.DateField()
+    def __str__(self):
+        return self.nombre
 
 class Venta(models.Model):
     fecha_de_venta = models.DateField()
@@ -38,10 +47,7 @@ class Venta(models.Model):
     id_Vendedor = models.ForeignKey(Vendedor, on_delete = models.CASCADE)
 
 class LineaVenta(models.Model):
-    id_Venta= models.ForeignKey(Venta, on_delete = models.CASCADE)
+    venta= models.ForeignKey(Venta, on_delete = models.CASCADE)
     cantidad = models.IntegerField(default = 1)
     precio = models.FloatField(default = 0)
     producto = models.ForeignKey(Producto, on_delete = models.CASCADE)
-
-
-
