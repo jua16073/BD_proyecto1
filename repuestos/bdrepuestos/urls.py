@@ -11,5 +11,9 @@ urlpatterns = [
 	path('clientes/<int:cliente_id>/', views.detalle_cliente, name='detalle_cliente'),
 	path('repuestos/<int:producto_id>/', views.detalle_repuesto, name='detalle_repuesto'),
 	path('proveedores/<int:proveedor_id>/', views.detalle_proveedor, name='detalle_proveedor'),
-	path('ventas/<int:venta_id>/', views.detalle_compra, name='detalle_compra')
+	path('ventas/<int:venta_id>/', views.detalle_compra, name='detalle_compra'),
+	path('anadirCliente.html', views.anadirCliente, name='anadirCliente'),
+	path('editarCliente.html/<int:cliente_id>', views.editarCliente, name='editarCliente'),
+	path('anadirProducto.html', views.anadirProducto, name='anadirProducto'),
+	path('editarProducto.html/<int:producto_id>', views.editarProducto, name='editarProducto')
 ]

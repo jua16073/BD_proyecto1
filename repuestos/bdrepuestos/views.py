@@ -1,9 +1,64 @@
 from django.http import HttpResponse
 from .models import Vendedor, Cliente, Producto, Venta, LineaVenta, Proveedor
 from django.template import loader
-from .forms import ContactForm
+from .forms import ContactForm, AnadirForm, anadirProductoForm
 from django.shortcuts import render, get_object_or_404
 from django.db import connection
+from django.contrib import messages
+
+
+#Se a;ade un CLIENTE a la base de datos
+def anadirCliente(request):
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/anadirCliente.html', {'form': AnadirForm()})
+    form = AnadirForm(request.POST)
+    if form.is_valid():
+        x=connection.cursor()
+        x.execute("INSERT INTO bdrepuestos_cliente (nombre, telefono, dpi, correo, tipo, direccion, nit, twitter, fecha_de_comienzo) VALUES ('"+form.cleaned_data.get('nombre')+"', '"+form.cleaned_data.get('telefono')+"', '"+form.cleaned_data.get('dpi')+"', '"+form.cleaned_data.get('correo')+"', '"+form.cleaned_data.get('tipo')+"', '"+form.cleaned_data.get('direccion')+"', '"+form.cleaned_data.get('nit')+"', '"+form.cleaned_data.get('twitter')+"', '"+str(form.cleaned_data.get('fecha_de_comienzo'))+"'::date) RETURNING bdrepuestos_cliente.id")
+    else:
+        return render(request, 'bdrepuestos/anadirCliente.html', {'form': AnadirForm(request.POST)})
+    return render(request, 'bdrepuestos/home.html', {'form': ContactForm( modelo=0)})
+
+#Se edita un CLIENTE que ya ha sido a;adido
+def editarCliente(request, cliente_id):
+    inst = get_object_or_404(Cliente, pk=cliente_id)
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(instance=inst)})
+    form = AnadirForm(request.POST, instance=inst)
+    if form.is_valid():
+        x=connection.cursor()
+        x.execute("UPDATE bdrepuestos_cliente SET nombre = '"+form.cleaned_data.get('nombre')+"', telefono = '"+form.cleaned_data.get('telefono')+"', dpi = '"+form.cleaned_data.get('dpi')+"', correo = '"+form.cleaned_data.get('correo')+"', tipo = '"+form.cleaned_data.get('tipo')+"', direccion = '"+form.cleaned_data.get('direccion')+"', nit = '"+form.cleaned_data.get('nit')+"', twitter = '"+form.cleaned_data.get('twitter')+"', fecha_de_comienzo = '"+str(form.cleaned_data.get('fecha_de_comienzo'))+"'::date WHERE bdrepuestos_cliente.id = "+str(cliente_id))
+    else:
+        return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(request.POST, instance=inst)})
+    return render(request, 'bdrepuestos/home.html', {'form': ContactForm( modelo=0)})
+
+#Se a;ade un PRODUCTO a la base de datos
+def anadirProducto(request):
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/anadirProducto.html', {'form': anadirProductoForm()})
+    form = anadirProductoForm(request.POST)
+    if form.is_valid():
+        x=connection.cursor()
+        x.execute("INSERT INTO bdrepuestos_producto (nombre, categoria, precio1, precio2, precio3, disponibilidad, marca, proveedor_id) VALUES ('"+form.cleaned_data.get('nombre')+"', '"+form.cleaned_data.get('categoria')+"', "+str(form.cleaned_data.get('precio1'))+", "+str(form.cleaned_data.get('precio2'))+", "+str(form.cleaned_data.get('precio3'))+", "+str(form.cleaned_data.get('disponibilidad'))+", '"+form.cleaned_data.get('marca')+"', 1) RETURNING bdrepuestos_producto.id")
+        print("El proveedor es ")
+        print(str(form.cleaned_data.get('proveedor')))
+    else:
+        return render(request, 'bdrepuestos/anadirProducto.html', {'form': anadirProductoForm(request.POST)})
+    return render(request, 'bdrepuestos/repuestos.html', {'paso':0, 'form': ContactForm(modelo=2), 'things': Producto.objects.all()})
+
+
+#Se edita un PRODUCTO que ya este en la base de datos
+def editarProducto(request, producto_id):
+    inst = get_object_or_404(Producto, pk=producto_id)
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/editarProducto.html', {'form': anadirProductoForm(instance=inst)})
+    form = anadirProductoForm(request.POST, instance=inst)
+    if form.is_valid():
+        x=connection.cursor()
+        x.execute("UPDATE bdrepuestos_cliente SET nombre = '"+form.cleaned_data.get('nombre')+"', telefono = '"+form.cleaned_data.get('telefono')+"', dpi = '"+form.cleaned_data.get('dpi')+"', correo = '"+form.cleaned_data.get('correo')+"', tipo = '"+form.cleaned_data.get('tipo')+"', direccion = '"+form.cleaned_data.get('direccion')+"', nit = '"+form.cleaned_data.get('nit')+"', twitter = '"+form.cleaned_data.get('twitter')+"', fecha_de_comienzo = '"+str(form.cleaned_data.get('fecha_de_comienzo'))+"'::date WHERE bdrepuestos_cliente.id = "+str(cliente_id))
+    else:
+        return render(request, 'bdrepuestos/editarProducto.html', {'form': anadirProductoForm(request.POST, instance=inst)})
+    return render(request, 'bdrepuestos/repuestos.html', {'paso':0, 'form': ContactForm(modelo=2), 'things': Producto.objects.all()})
 
 
 def index(request):

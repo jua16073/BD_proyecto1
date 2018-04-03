@@ -20,22 +20,19 @@
 		</div>
 		<div id="menu">
 			<ul>
-				<li><a href="{% url 'catalogo' %}">Back</a></li>
-        <li><a href="{% url 'editarProducto' repuesto.id%}"><img src="{% static 'edit2.png' %}" height="25" width="25"></img></a></li>
+				<li><a href="{% url 'home' %}">Cancelar</a></li>
 			</ul>
 		</div>
 		<div id="contenido">
-			<h2>{{repuesto.nombre}}</h2>
-      <hr>
-      <p>Categoria: {{repuesto.categoria}}</p>
-      <p>Precios:</p>
-      <ul>
-      <li>A : {{repuesto.precio1}}</li>
-      <li>B : {{repuesto.precio2}}</li>
-      <li>C : {{repuesto.precio3}}</li>
-      </ul>
-      <p>Disponibilidad : {{repuesto.disponibilidad}}</p>
-      <p>Marca: {{repuesto.marca}}</p>
+			<h2>Agregar</h2>
+      <br><hr>
+      <form method="post" action="" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+      </form>
+      <br></br>
+
 		</div>
 		<div id="footer">
 			<p>

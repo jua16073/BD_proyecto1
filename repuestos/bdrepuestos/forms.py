@@ -26,10 +26,6 @@ def get_my_choices(mod):
     for choice in choices:
         MY_CHOICES.append((choice.name, choice.name))
     MY_CHOICES.remove(MY_CHOICES[0])
-    #MY_CHOICES.remove(MY_CHOICES[0])
-    print(MY_CHOICES)
-    #MY_CHOICES.remove(('id', 'id'))
-    #MY_CHOICES.remove(MY_CHOICES[len(MY_CHOICES)-1])
     return MY_CHOICES
 
 
@@ -46,3 +42,17 @@ class ContactForm(forms.Form):
     def clean(self):
         cleaned_data = super(ContactForm, self).clean()
         query = cleaned_data.get('query')
+
+class AnadirForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = '__all__'
+    def clean(self):
+        cleaned_data = super(AnadirForm, self).clean()
+
+class anadirProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = '__all__'
+    def clean(self):
+        cleaned_data = super(anadirProductoForm, self).clean()

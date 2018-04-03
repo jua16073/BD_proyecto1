@@ -18,12 +18,12 @@ class Vendedor(models.Model):
 class Producto(models.Model):
     nombre=models.CharField(max_length = 200)
     categoria=models.CharField(max_length = 200)
-    precioA = models.FloatField(default = 0)
-    precioB = models.FloatField(default = 0)
-    precioC = models.FloatField(default = 0)
+    precio1 = models.FloatField(default = 0)
+    precio2 = models.FloatField(default = 0)
+    precio3 = models.FloatField(default = 0)
     disponibilidad = models.IntegerField(default = 0)
     marca = models.TextField()
-    id_Proveedor = models.ForeignKey(Proveedor, on_delete = models.CASCADE)
+    proveedor = models.ForeignKey(Proveedor, on_delete = models.CASCADE)
     def __str__(self):
         return self.nombre
 
@@ -44,7 +44,7 @@ class Venta(models.Model):
     fecha_de_venta = models.DateField()
     id_Cliente = models.ForeignKey(Cliente, on_delete = models.CASCADE)
     total = models.FloatField(default = 0)
-    id_Vendedor = models.ForeignKey(Vendedor, on_delete = models.CASCADE)
+    vendedor = models.ForeignKey(Vendedor, on_delete = models.CASCADE)
 
 class LineaVenta(models.Model):
     venta= models.ForeignKey(Venta, on_delete = models.CASCADE)
