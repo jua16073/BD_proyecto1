@@ -1,10 +1,11 @@
 from django.http import HttpResponse
 from .models import Vendedor, Cliente, Producto, Venta, LineaVenta, Proveedor
 from django.template import loader
-from .forms import ContactForm, AnadirForm, anadirProductoForm
+from .forms import ContactForm, AnadirForm, anadirProductoForm, ContactForm2
 from django.shortcuts import render, get_object_or_404
 from django.db import connection
 from django.contrib import messages
+from chartit import DataPool, Chart
 
 
 #Se a;ade un CLIENTE a la base de datos
@@ -195,3 +196,61 @@ def detalle_compra(request, venta_id):
     x.execute("SELECT * FROM bdrepuestos_lineaventa WHERE venta_id = '"+str(compra.id)+"'")
     detalles = x.fetchall()
     return render(request, 'bdrepuestos/detalles_compra.html', {'compra':compra, 'detalles':detalles})
+
+
+def login(request):
+    form= ContactForm2(request.POST)
+    return render(request,'./bdrepuestos/login.html', {'form': form})
+
+
+def ver(request):
+    form = ContactForm2(request.POST)
+    if form.is_valid():
+        print(form.cleaned_data.get('contra'))
+        x=connection.cursor()
+        try:
+            x.execute("SELECT * FROM bdrepuestos_vendedor WHERE  nombre LIKE '"+form.cleaned_data.get('name')+"'AND contraseña LIKE '"+form.cleaned_data.get('contra')+"'")
+            if(form.cleaned_data.get('name')!=''):
+                things=x.fetchall()
+                print (len(things))
+                if (len(things)!=0):
+                    return render (request, 'bdrepuestos/home.html')
+                else:
+                    return render(request, 'bdrepuestos/login.html', {'form':form})
+                paso = 1
+        except ValueError:
+            things = Producto.objects.all()
+        return HttpResponse("wow")
+    else:
+        return render(request, 'bdrepuestos/login.html', {'form':form})
+
+
+def chart1(request):
+    ventas_data= DataPool(series=[{
+    'options':{
+    'source': Vendedor.objects.all()
+    },
+    'terms':[
+    'nombre',
+    #'contrasena',
+    'total_ventas',
+    'contraseña']}
+    ])
+
+    cht= Chart(
+    datasource= ventas_data,
+    series_options=[{
+    'options':{
+    'type':'line',
+    'stacking': False},
+    'terms':{
+    'nombre':[
+    'total_ventas']}
+    }],
+    chart_options =
+    {'title':{
+    'text':'Ventas por vendedor'},
+    'xAxis':{'text': 'Ventas'}
+    }
+    )
+    return render(request, 'bdrepuestos/cuadros.html',{'dataVendedor':cht})

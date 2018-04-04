@@ -42,7 +42,7 @@ class ContactForm(forms.Form):
     def clean(self):
         cleaned_data = super(ContactForm, self).clean()
         query = cleaned_data.get('query')
-
+        
 class AnadirForm(forms.ModelForm):
     class Meta:
         model = Cliente
@@ -56,3 +56,15 @@ class anadirProductoForm(forms.ModelForm):
         fields = '__all__'
     def clean(self):
         cleaned_data = super(anadirProductoForm, self).clean()
+
+
+class ContactForm2(forms.Form):
+    name = forms.CharField(
+        max_length=50
+    )
+    contra= forms.CharField( max_length=50)
+
+    def clean(self):
+        cleaned_data = super(ContactForm2, self).clean()
+        name = cleaned_data.get('name')
+        contra = cleaned_data.get('contra')

@@ -12,6 +12,7 @@ class Vendedor(models.Model):
     nombre = models.CharField(max_length = 200)
     contrasena=models.CharField(max_length = 200)
     total_ventas = models.FloatField()
+    contraseña = models.TextField()
     def __str__(self):
         return self.nombre
 
