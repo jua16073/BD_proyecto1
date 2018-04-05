@@ -56,3 +56,24 @@ class anadirProductoForm(forms.ModelForm):
         fields = '__all__'
     def clean(self):
         cleaned_data = super(anadirProductoForm, self).clean()
+
+class anadirProveedorForm(forms.ModelForm):
+    class Meta:
+        model = Proveedor
+        fields = '__all__'
+    def clean(self):
+        cleaned_data = super(anadirProveedorForm, self).clean()
+
+class anadirVentaForm(forms.ModelForm):
+    class Meta:
+        model = Venta
+        fields = '__all__'
+    def clean(self):
+        cleaned_data = super(anadirVentaForm, self).clean()
+
+class anadirLineaForm(forms.ModelForm):
+    class Meta:
+        model = LineaVenta
+        fields = '__all__'
+    def clean(self):
+        cleaned_data = super(anadirLineaForm, self).clean()

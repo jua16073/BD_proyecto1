@@ -38,14 +38,15 @@
 			<p>
         {% ifequal paso 1%}
         {% for thing in things %}
-            <p>{{ thing.1 }}</p>
+            <p><a href="{% url 'editarProveedor' thing.0%}">{{ thing.1 }}</img></a></p>
         {% endfor %}
         {% else %}
         {% for thing in things %}
-            <p>{{ thing.nombre }}</p>
+            <p><a href="{% url 'editarProveedor' thing.id%}">{{ thing.nombre }}</img></a></p>
         {% endfor %}
         {% endifequal %}
 			</p>
+      <p><a href="{%url 'anadirProveedor'%}"><img src="{% static 'add.png' %}" height="42" width="42"></img></a></p>
 		</div>
 		<div id="footer">
 			<p>

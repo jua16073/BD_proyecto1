@@ -42,7 +42,7 @@ class Cliente(models.Model):
 
 class Venta(models.Model):
     fecha_de_venta = models.DateField()
-    id_Cliente = models.ForeignKey(Cliente, on_delete = models.CASCADE)
+    cliente = models.ForeignKey(Cliente, on_delete = models.CASCADE)
     total = models.FloatField(default = 0)
     vendedor = models.ForeignKey(Vendedor, on_delete = models.CASCADE)
 

@@ -33,6 +33,11 @@
       <p>NIT : {{cliente.nit}}</p>
       <p>Tipo: {{cliente.tipo}}</p>
 		</div>
+    <br><hr>
+    <h2>Feed</h2>
+    {% for t in twitter %}
+        <p>{{ t.tweet }}</p>
+    {% endfor %}
 		<div id="footer">
 			<p>
 				Desarrollado por: <a href="/" target="_blank">RRC</a>
