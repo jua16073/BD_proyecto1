@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
 
+#app_name='bdrepuestos'
+
 urlpatterns = [
-	path('', views.index, name='index'),
+	path('', views.login, name='index'),
 	path('home.html', views.home, name='home'),
 	path('repuestos.html', views.catalogo, name='catalogo'),
 	path('clientes.html', views.clientes, name='clientes'),
@@ -21,4 +23,8 @@ urlpatterns = [
 	path('editarVenta.html/<int:pls>', views.editarVenta, name='editarVenta'),
 	path('anadirLineaVenta.html/<int:venta>', views.anadirLineaVenta, name='anadirLineaVenta'),
 	path('eliminarCliente.html/<int:id>', views.eliminarCliente, name='eliminarCliente')
+	path('editarProducto.html/<int:producto_id>', views.editarProducto, name='editarProducto'),
+	path('login.html',views.login, name='login'),
+	path('ver',views.ver, name= 'ver'),
+	path('chart', views.chart1, name='chart')
 ]

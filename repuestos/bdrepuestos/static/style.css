@@ -105,3 +105,18 @@ Cosillas del login
 
 #contenido,
 ul li a{ box-shadow: 0px 1px 1px #999; }
+
+/*
+Cosillas del login
+*/
+#login{
+	margin: 100px 300px;
+	background: white;
+	padding: 75px;
+	clear: both;
+	font-size: 120%
+}
+
+#chapuz{
+	text-align: center;
+}
