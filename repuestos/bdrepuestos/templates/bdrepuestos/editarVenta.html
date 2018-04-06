@@ -29,6 +29,7 @@
       <form method="post" action="" novalidate>
         {% csrf_token %}
         {{ form }}
+        <a href="{%url 'anadirLineaVenta' venta%}"><img src="{% static 'add.png' %}" height="42" width="42"></img></a>
         <br>
         <p> &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Cantidad &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Precio &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Repuesto</p>
         <hr>

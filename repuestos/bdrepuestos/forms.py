@@ -67,13 +67,18 @@ class anadirProveedorForm(forms.ModelForm):
 class anadirVentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = '__all__'
+        exclude = ['total']
     def clean(self):
         cleaned_data = super(anadirVentaForm, self).clean()
 
 class anadirLineaForm(forms.ModelForm):
     class Meta:
         model = LineaVenta
-        fields = '__all__'
+        exclude = ['venta']
     def clean(self):
         cleaned_data = super(anadirLineaForm, self).clean()
+
+class eliminarForm(forms.Form):
+    eliminar = forms.BooleanField(required=False)
+    def clean(self):
+        cleaned_data = super(eliminarForm, self).clean()

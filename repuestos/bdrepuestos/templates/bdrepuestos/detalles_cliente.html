@@ -22,6 +22,7 @@
 			<ul>
 				<li><a href="{% url 'clientes' %}">Back</a></li>
         <li><a href="{% url 'editarCliente' cliente.id%}"><img src="{% static 'edit2.png' %}" height="25" width="25"></img></a></li>
+        <li><a href="{% url 'eliminarCliente' cliente.id%}"><img src="{% static 'eliminar2.png' %}" height="25" width="25"></img></a></li>
 			</ul>
 		</div>
 		<div id="contenido">

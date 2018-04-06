@@ -18,5 +18,7 @@ urlpatterns = [
 	path('editarProducto.html/<int:producto_id>', views.editarProducto, name='editarProducto'),
 	path('anadirProveedor.html', views.anadirProveedor, name='anadirProveedor'),
 	path('editarProveedor.html/<int:proveedor_id>', views.editarProveedor, name='editarProveedor'),
-	path('editarVenta.html/<int:pls>', views.editarVenta, name='editarVenta')
+	path('editarVenta.html/<int:pls>', views.editarVenta, name='editarVenta'),
+	path('anadirLineaVenta.html/<int:venta>', views.anadirLineaVenta, name='anadirLineaVenta'),
+	path('eliminarCliente.html/<int:id>', views.eliminarCliente, name='eliminarCliente')
 ]

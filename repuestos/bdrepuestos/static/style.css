@@ -71,6 +71,21 @@ Cosillas del menu
 
 #menu ul li a:active{ background-color: #ff8f00; }
 
+/*
+Cosillas del login
+*/
+#login{
+	margin: 100px 300px;
+	background: white;
+	padding: 75px;
+	clear: both;
+	font-size: 120%
+}
+
+#chapuz{
+	text-align: center;
+}
+
 #contenido{
 	margin: 30px 0;
 	background: white;

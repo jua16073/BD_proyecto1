@@ -1,0 +1,44 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <title>Auto Repuestos Villeda</title>
+
+	<meta name="author" content="Rodrigo Alvarado" />
+	<meta name="description" content="Prueba para el proyecto que ya valio 20" />
+
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+<body>
+
+	<div id="todo">
+		<div id="titulo">
+			<h1><a href="{% url 'home' %}" id="logoLink">Auto Repuestos Villeda</a></h1>
+		</div>
+		<div id="menu">
+			<ul>
+				<li><a href="{% url 'editarVenta' venta%}">Cancelar</a></li>
+			</ul>
+		</div>
+		<div id="contenido">
+			<h2>Agregar</h2>
+      <br><hr>
+      <form method="post" action="" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+      </form>
+      <br></br>
+
+		</div>
+		<div id="footer">
+			<p>
+				Desarrollado por: <a href="/" target="_blank">RRC</a>
+			</p>
+		</div>
+	</div>
+</body>
+</html>

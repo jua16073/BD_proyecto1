@@ -7,7 +7,7 @@ from django.db import connection
 from django.contrib import messages
 import tweepy
 import pymongo
-
+import datetime
 
 #Se a;ade un CLIENTE a la base de datos
 def anadirCliente(request):
@@ -118,14 +118,14 @@ def editarVenta(request, pls):
     except Exception as e:
         inst = 0
     if inst:
+        x=connection.cursor()
+        x.execute("SELECT SUM(cantidad*precio) FROM bdrepuestos_lineaventa WHERE venta_id = '" + str(pls)+"'")
+        tot = x.fetchone()[0]
+        print(tot)
+        x.execute("SELECT * FROM bdrepuestos_lineaventa WHERE venta_id = '"+str(pls)+"'")
+        detalles = x.fetchall()
         if request.method == 'GET':
-            x=connection.cursor()
-            x.execute("SELECT SUM(cantidad*precio) FROM bdrepuestos_lineaventa WHERE venta_id = '" + str(pls)+"'")
-            tot = x.fetchone()[0]
-            print(tot)
-            x.execute("SELECT * FROM bdrepuestos_lineaventa WHERE venta_id = '"+str(pls)+"'")
-            detalles = x.fetchall()
-            return render(request, 'bdrepuestos/editarVenta.html', {'form': anadirVentaForm(instance=inst), 'detalles':detalles, 'total':tot})
+            return render(request, 'bdrepuestos/editarVenta.html', {'venta': pls, 'form': anadirVentaForm(instance=inst), 'detalles':detalles, 'total':tot})
         form = anadirVentaForm(request.POST, instance=inst)
         if form.is_valid():
             x=connection.cursor()
@@ -133,16 +133,16 @@ def editarVenta(request, pls):
             tot = x.fetchone()[0]
             x.execute("SELECT id FROM bdrepuestos_cliente WHERE nombre LIKE '"+str(form.cleaned_data.get('cliente'))+"'")
             cl = x.fetchone()[0]
-            x.execute("SELECT id FROM bdrepuestos_vendedor WHERE nombre LIKE '"+str(form.cleaned_data.get('vendedor'))+"'")
-            vd = x.fetchone()[0]
+            x.execute("SELECT id, total_ventas FROM bdrepuestos_vendedor WHERE nombre LIKE '"+str(form.cleaned_data.get('vendedor'))+"'")
+            resultados = x.fetchone()
+            vd = resultados[0]
+            tventas = resultados[1]
+            print("EL TOTAL DE VENTAS ES DE: " + str(tventas))
             x.execute("UPDATE bdrepuestos_venta SET fecha_de_venta = '"+str(form.cleaned_data.get('fecha_de_venta'))+"'::date, cliente_id = "+ str(cl) +", total = "+ str(tot) +" WHERE bdrepuestos_venta.id = "+str(pls))
+            x.execute("UPDATE bdrepuestos_vendedor SET total_ventas = "+ str(tventas + tot) +" WHERE bdrepuestos_vendedor.id = "+ str(vd))
+            return redirect(home)
         else:
-            x=connection.cursor()
-            x.execute("SELECT SUM(cantidad*precio) FROM bdrepuestos_lineaventa WHERE venta_id = '" + str(pls)+"'")
-            tot = x.fetchone()[0]
-            x.execute("SELECT * FROM bdrepuestos_lineaventa WHERE venta_id = '"+str(pls)+"'")
-            detalles = x.fetchall()
-            return render(request, 'bdrepuestos/editarVenta.html', {'form': anadirVentaForm(request.POST, instance=inst), 'detalles':detalles, 'total':tot})
+            return render(request, 'bdrepuestos/editarVenta.html', {'venta': pls, 'form': anadirVentaForm(request.POST, instance=inst), 'detalles':detalles, 'total':tot})
     else:
         if request.method == 'GET':
             return render(request, 'bdrepuestos/home.html', {'form': anadirVentaForm()})
@@ -158,6 +158,43 @@ def editarVenta(request, pls):
             return render(request, 'bdrepuestos/home.html', {'form': anadirVentaForm(request.POST)})
 
     return render(request, 'bdrepuestos/home.html', {'paso':0, 'form': anadirVentaForm()})
+
+def anadirLineaVenta(request, venta):
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/anadirLineaVenta.html', {'form': anadirLineaForm(), 'venta':venta})
+    print("1")
+    form = anadirLineaForm(request.POST)
+    if form.is_valid():
+        print("2")
+        x=connection.cursor()
+        x.execute("SELECT max(id) FROM bdrepuestos_venta")
+        local = x.fetchone()[0]
+        print("lOCAL = " + str(local))
+        x.execute("SELECT id FROM bdrepuestos_producto WHERE nombre LIKE '"+str(form.cleaned_data.get('producto'))+"'")
+        prod = x.fetchone()[0]
+        x.execute("INSERT INTO bdrepuestos_lineaventa (cantidad, precio, venta_id, producto_id) VALUES ("+str(form.cleaned_data.get('cantidad'))+", "+str(form.cleaned_data.get('precio'))+", "+str(venta)+", "+str(prod)+" ) RETURNING bdrepuestos_lineaventa.id")
+    else:
+        return render(request, 'bdrepuestos/anadirLineaVenta.html', {'form': anadirLineaForm(request.POST), 'venta':venta})
+    return redirect(editarVenta, pls = local)
+
+def eliminarCliente(request, id):
+    x=connection.cursor()
+    x.execute("SELECT nombre FROM bdrepuestos_cliente WHERE id = "+str(id))
+    nombre = str(x.fetchone()[0])
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/eliminarCliente.html', {'form': eliminarForm(), 'cliente_id':id, 'nombre': nombre})
+    form = eliminarForm(request.POST)
+    if form.is_valid():
+        if form.cleaned_data.get('eliminar'):
+            x.execute("SELECT id FROM bdrepuestos_venta WHERE cliente_id = "+ str(id))
+            ventas = x.fetchall()
+            for venta in ventas:
+                x.execute("DELETE FROM bdrepuestos_lineaventa WHERE venta_id = "+ str(venta[0]))
+            x.execute("DELETE FROM bdrepuestos_venta WHERE cliente_id = "+ str(id))
+            x.execute("DELETE FROM bdrepuestos_cliente WHERE bdrepuestos_cliente.id = "+ str(id))
+            return redirect(clientes)
+        else:
+            return redirect(detalle_cliente, cliente_id=id)
 
 #CATALOGO DE Repuestos
 def catalogo(request):

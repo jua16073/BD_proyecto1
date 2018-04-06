@@ -1,0 +1,35 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Eliminar</title>
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+	<body>
+    <div id="menu">
+			<ul>
+				<li><a href="{% url 'detalle_cliente' cliente_id%}">Cancelar</a></li>
+			</ul>
+		</div>
+		<div id="todo">
+			<div id="login">
+				<div id="chapuz">
+				<h1>Esta seguro de querer eliminar: {{ nombre }}</h1>
+				</div>
+				{% if error_message%}
+				<p><strong> {{error_message}}</strong></p>
+				{% endif %}
+				<p>
+					<div id="chapuz">
+					<form action="" method="post" novalidate>
+						{%csrf_token%}
+						{{ form.as_p }}
+						<input type="Submit" name="Submit" value="Aceptar">
+					</form>
+					</div>
+
+				</p>
+			</div>
+		</div>
+	</body>
+</html>
