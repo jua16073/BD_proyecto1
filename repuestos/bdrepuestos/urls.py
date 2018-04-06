@@ -22,9 +22,10 @@ urlpatterns = [
 	path('editarProveedor.html/<int:proveedor_id>', views.editarProveedor, name='editarProveedor'),
 	path('editarVenta.html/<int:pls>', views.editarVenta, name='editarVenta'),
 	path('anadirLineaVenta.html/<int:venta>', views.anadirLineaVenta, name='anadirLineaVenta'),
-	path('eliminarCliente.html/<int:id>', views.eliminarCliente, name='eliminarCliente')
+	path('eliminarCliente.html/<int:id>', views.eliminarCliente, name='eliminarCliente'),
 	path('editarProducto.html/<int:producto_id>', views.editarProducto, name='editarProducto'),
 	path('login.html',views.login, name='login'),
 	path('ver',views.ver, name= 'ver'),
-	path('chart', views.chart1, name='chart')
+	path('chart', views.chart1, name='chart'),
+	path('anadirCampo2.html',views.anadirCampo2, name= 'anadirCampo2')
 ]

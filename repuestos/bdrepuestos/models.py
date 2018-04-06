@@ -10,9 +10,8 @@ class Proveedor(models.Model):
 
 class Vendedor(models.Model):
     nombre = models.CharField(max_length = 200)
-    contrasena=models.CharField(max_length = 200)
     total_ventas = models.FloatField()
-    contraseña = models.TextField()
+    contraseña = models.CharField(max_length = 200)
     def __str__(self):
         return self.nombre
 
@@ -52,3 +51,11 @@ class LineaVenta(models.Model):
     cantidad = models.IntegerField(default = 1)
     precio = models.FloatField(default = 0)
     producto = models.ForeignKey(Producto, on_delete = models.CASCADE)
+
+class CampoAdicional(models.Model):
+    nombre = models.CharField(max_length = 200)
+
+class Info(models.Model):
+    campo = models.ForeignKey(CampoAdicional, on_delete = models.CASCADE)
+    info = models.CharField(max_length = 100)
+    cliente = models.ForeignKey(Cliente, on_delete = models.CASCADE)

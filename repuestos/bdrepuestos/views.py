@@ -13,27 +13,63 @@ from django.db.models import *
 
 #Se a;ade un CLIENTE a la base de datos
 def anadirCliente(request):
+    c = []
+    x=connection.cursor()
+    x.execute("SELECT nombre FROM bdrepuestos_campoadicional")
+    campos = x.fetchall()
+    if campos:
+        for i in range(len(campos)):
+            c.append({'campo' : campos[i][0], 'lleno': ''})
     if request.method == 'GET':
-        return render(request, 'bdrepuestos/anadirCliente.html', {'form': AnadirForm()})
-    form = AnadirForm(request.POST)
+        return render(request, 'bdrepuestos/anadirCliente.html', {'form': AnadirForm(adicionales = c)})
+    form = AnadirForm(request.POST, adicionales = c)
     if form.is_valid():
         x=connection.cursor()
         x.execute("INSERT INTO bdrepuestos_cliente (nombre, telefono, dpi, correo, tipo, direccion, nit, twitter, fecha_de_comienzo) VALUES ('"+form.cleaned_data.get('nombre')+"', '"+form.cleaned_data.get('telefono')+"', '"+form.cleaned_data.get('dpi')+"', '"+form.cleaned_data.get('correo')+"', '"+form.cleaned_data.get('tipo')+"', '"+form.cleaned_data.get('direccion')+"', '"+form.cleaned_data.get('nit')+"', '"+form.cleaned_data.get('twitter')+"', '"+str(form.cleaned_data.get('fecha_de_comienzo'))+"'::date) RETURNING bdrepuestos_cliente.id")
+        cliente_id = x.fetchone()[0]
+        for campo in c:
+            x.execute("SELECT id FROM bdrepuestos_campoadicional WHERE nombre LIKE '" + campo["campo"]+"'")
+            cid = x.fetchone()[0]
+            x.execute("INSERT INTO bdrepuestos_info (campo_id, info, cliente_id) VALUES ("+str(cid)+", '"+form.cleaned_data.get(campo["campo"])+"', "+str(cliente_id)+")")
     else:
-        return render(request, 'bdrepuestos/anadirCliente.html', {'form': AnadirForm(request.POST)})
+        return render(request, 'bdrepuestos/anadirCliente.html', {'form': AnadirForm(request.POST, adicionales = c)})
     return render(request, 'bdrepuestos/clientes.html', {'paso':0, 'form': ContactForm( modelo=0), 'things':Cliente.objects.all()})
 
 #Se edita un CLIENTE que ya ha sido a;adido
 def editarCliente(request, cliente_id):
+    c = []
+    x=connection.cursor()
+    x.execute("SELECT nombre FROM bdrepuestos_campoadicional")
+    campos = x.fetchall()
+    x.execute("SELECT info FROM bdrepuestos_info WHERE cliente_id = "+ str(cliente_id))
+    info = x.fetchall()
+    if campos:
+        if info:
+            for i in range(len(campos)):
+                c.append({'campo' : campos[i][0], 'lleno': info[i][0]})
+        else:
+            for i in range(len(campos)):
+                c.append({'campo' : campos[i][0], 'lleno': ''})
     inst = get_object_or_404(Cliente, pk=cliente_id)
     if request.method == 'GET':
-        return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(instance=inst)})
-    form = AnadirForm(request.POST, instance=inst)
+        return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(instance=inst, adicionales = c)})
+    form = AnadirForm(request.POST, instance=inst, adicionales = c)
     if form.is_valid():
         x=connection.cursor()
+        if info:
+            for campo in c:
+                x.execute("SELECT id FROM bdrepuestos_campoadicional WHERE nombre LIKE '" + campo["campo"]+"'")
+                cid = x.fetchone()[0]
+                print(cid)
+                x.execute("UPDATE bdrepuestos_info SET info = '"+form.cleaned_data.get(campo["campo"])+"' WHERE bdrepuestos_info.campo_id = "+str(cid))
+        else:
+            for campo in c:
+                x.execute("SELECT id FROM bdrepuestos_campoadicional WHERE nombre LIKE '" + campo["campo"]+"'")
+                cid = x.fetchone()[0]
+                x.execute("INSERT INTO bdrepuestos_info (campo_id, info, cliente_id) VALUES ("+str(cid)+", '"+form.cleaned_data.get(campo["campo"])+"', "+str(cliente_id)+")")
         x.execute("UPDATE bdrepuestos_cliente SET nombre = '"+form.cleaned_data.get('nombre')+"', telefono = '"+form.cleaned_data.get('telefono')+"', dpi = '"+form.cleaned_data.get('dpi')+"', correo = '"+form.cleaned_data.get('correo')+"', tipo = '"+form.cleaned_data.get('tipo')+"', direccion = '"+form.cleaned_data.get('direccion')+"', nit = '"+form.cleaned_data.get('nit')+"', twitter = '"+form.cleaned_data.get('twitter')+"', fecha_de_comienzo = '"+str(form.cleaned_data.get('fecha_de_comienzo'))+"'::date WHERE bdrepuestos_cliente.id = "+str(cliente_id))
     else:
-        return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(request.POST, instance=inst)})
+        return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(request.POST, instance=inst, adicionales = c)})
     return render(request, 'bdrepuestos/clientes.html', {'paso':0, 'form': ContactForm( modelo=0), 'things':Cliente.objects.all()})
 
 #Se a;ade un PRODUCTO a la base de datos
@@ -190,13 +226,23 @@ def eliminarCliente(request, id):
         if form.cleaned_data.get('eliminar'):
             x.execute("SELECT id FROM bdrepuestos_venta WHERE cliente_id = "+ str(id))
             ventas = x.fetchall()
-            for venta in ventas:
-                x.execute("DELETE FROM bdrepuestos_lineaventa WHERE venta_id = "+ str(venta[0]))
-            x.execute("DELETE FROM bdrepuestos_venta WHERE cliente_id = "+ str(id))
-            x.execute("DELETE FROM bdrepuestos_cliente WHERE bdrepuestos_cliente.id = "+ str(id))
+            if ventas:
+                x.execute("UPDATE bdrepuestos_venta SET cliente_id = 11 WHERE cliente_id = "+ str(id))
+                x.execute("DELETE FROM bdrepuestos_cliente WHERE bdrepuestos_cliente.id = "+ str(id))
             return redirect(clientes)
         else:
             return redirect(detalle_cliente, cliente_id=id)
+
+def anadirCampo2(request):
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/anadirProveedor.html', {'form': anadirCampo2Form()})
+    form = anadirCampo2Form(request.POST)
+    if form.is_valid():
+        x=connection.cursor()
+        x.execute("INSERT INTO bdrepuestos_campoadicional (nombre) VALUES ('"+form.cleaned_data.get('nombre')+"') RETURNING bdrepuestos_campoadicional.id")
+    else:
+        return render(request, 'bdrepuestos/anadirCampo2.html', {'form': anadirCampo2Form(request.POST)})
+    return render(request, 'bdrepuestos/clientes.html', {'form': ContactForm( modelo=0), 'things': Cliente.objects.all()})
 
 #CATALOGO DE Repuestos
 def catalogo(request):
@@ -209,7 +255,7 @@ def catalogo(request):
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_producto WHERE CAST("+form.cleaned_data.get('Por') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%'")
+            x.execute("SELECT * FROM bdrepuestos_producto WHERE CAST("+form.cleaned_data.get('Parametro') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%' ORDER BY " + form.cleaned_data.get('Order_by'))
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -234,7 +280,7 @@ def clientes(request):
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_cliente WHERE CAST("+form.cleaned_data.get('Por') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%'")
+            x.execute("SELECT * FROM bdrepuestos_cliente WHERE CAST("+form.cleaned_data.get('Parametro') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%' ORDER BY " + form.cleaned_data.get('Order_by'))
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -259,7 +305,7 @@ def proveedores(request):
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_proveedor WHERE CAST("+form.cleaned_data.get('Por') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%'")
+            x.execute("SELECT * FROM bdrepuestos_proveedor WHERE CAST("+form.cleaned_data.get('Parametro') + " AS TEXT) LIKE '%"+form.cleaned_data.get('query')+"%' ORDER BY " + form.cleaned_data.get('Order_by'))
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -284,7 +330,7 @@ def compras(request):
         print(form.cleaned_data.get('query'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_venta WHERE CAST(" + form.cleaned_data.get('Por') + " AS TEXT) LIKE '"+form.cleaned_data.get('query')+"'")
+            x.execute("SELECT * FROM bdrepuestos_venta WHERE CAST(" + form.cleaned_data.get('Parametro') + " AS TEXT) LIKE '"+form.cleaned_data.get('query')+"' ORDER BY " + form.cleaned_data.get('Order_by'))
             if(form.cleaned_data.get('query')!=''):
                 things=x.fetchall()
                 paso = 1
@@ -329,7 +375,15 @@ def cliente_twitter(nombre_screen):
 
 def detalle_cliente(request, cliente_id):
     cliente = get_object_or_404(Cliente, pk=cliente_id)
-    return render(request, 'bdrepuestos/detalles_cliente.html', {'cliente':cliente, 'twitter':cliente_twitter(cliente.twitter)})
+    x=connection.cursor()
+    nombres = []
+    x.execute("SELECT campo_id, info FROM bdrepuestos_info WHERE cliente_id = " + str(cliente_id))
+    info = x.fetchall()
+    if info:
+        for campo in info:
+            x.execute("SELECT nombre FROM bdrepuestos_campoadicional WHERE id = " + str(campo[0]))
+            nombres.append({'nombre': x.fetchone()[0], 'info': campo[1]})
+    return render(request, 'bdrepuestos/detalles_cliente.html', {'cliente':cliente, 'twitter':cliente_twitter(cliente.twitter), 'ncampos':nombres})
 
 def detalle_repuesto(request, producto_id):
     repuesto = get_object_or_404(Producto, pk=producto_id)
@@ -344,6 +398,10 @@ def detalle_compra(request, venta_id):
     x=connection.cursor()
     x.execute("SELECT * FROM bdrepuestos_lineaventa WHERE venta_id = '"+str(compra.id)+"'")
     detalles = x.fetchall()
+    #x.execute("SELECT nombre FROM bdrepuestos_cliente WHERE id = " + str(compra.cliente))
+    #cliente = x.fetchone()[0]
+    #x.execute("SELECT nombre FROM bdrepuestos_vendedor WHERE id = " + str(compra.vendedor))
+    #vendedor = x.fetchone()[0]
     return render(request, 'bdrepuestos/detalles_compra.html', {'compra':compra, 'detalles':detalles})
 
 
@@ -367,7 +425,7 @@ def ver(request):
                 things=x.fetchall()
                 print (len(things))
                 if (len(things)!=0):
-                    return render (request, 'bdrepuestos/home.html')
+                    return redirect(home)
                 else:
                     return render(request, 'bdrepuestos/login.html', {'form':form})
                 paso = 1
@@ -427,14 +485,14 @@ def chart1(request):
         {
         'options':{'source': Venta.objects.raw('SELECT * FROM bdrepuestos_venta')},
         'terms':[
-        'id_Cliente',
+        'cliente',
         'total'
         ]
         }])
 
     clientes_10= PivotDataPool(series=[{
         'options':{'source':Venta.objects.all(),
-        'categories':['id_Cliente'],
+        'categories':['cliente'],
         'top_n_per_cat':10},
         'terms':{
         'tot': Sum('total')

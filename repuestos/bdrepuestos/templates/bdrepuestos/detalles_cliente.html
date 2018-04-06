@@ -33,6 +33,10 @@
       <p>Direccion : {{cliente.direccion}}</p>
       <p>NIT : {{cliente.nit}}</p>
       <p>Tipo: {{cliente.tipo}}</p>
+      <p>Tweeter: {{ cliente.twitter }}</p>
+      {% for n in ncampos %}
+          <p>{{ n.nombre }}: {{ n.info }}</p>
+      {% endfor %}
 		</div>
     <br><hr>
     <h2>Feed</h2>

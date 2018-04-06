@@ -1,6 +1,7 @@
 from django import forms
 import psycopg2
-from .models import Vendedor, Cliente, Producto, Venta, LineaVenta, Proveedor
+from .models import *
+from django.db import connection
 
 def get_my_choices(mod):
     if mod == 0:
@@ -33,22 +34,29 @@ class ContactForm(forms.Form):
     query = forms.CharField(
         max_length=100
     )
-    Por = forms.ChoiceField(choices=get_my_choices([('1', '1')]))
+    Parametro = forms.ChoiceField(choices=get_my_choices([('1', '1')]))
+    Order_by = forms.ChoiceField(choices=get_my_choices([('1', '1')]))
     def __init__(self, *args, **kwargs):
         modelo = kwargs.pop('modelo')
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields['Por'] = forms.ChoiceField(choices=get_my_choices(modelo) )
+        self.fields['Parametro'] = forms.ChoiceField(choices=get_my_choices(modelo) )
+        self.fields['Order_by'] = forms.ChoiceField(choices=get_my_choices(modelo) )
 
     def clean(self):
         cleaned_data = super(ContactForm, self).clean()
         query = cleaned_data.get('query')
-        
+
 class AnadirForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = '__all__'
     def clean(self):
         cleaned_data = super(AnadirForm, self).clean()
+    def __init__(self, *args, **kwargs):
+        adicionales = kwargs.pop('adicionales')
+        super(AnadirForm, self).__init__(*args, **kwargs)
+        for x in adicionales:
+            self.fields[x["campo"]] = forms.CharField(max_length=50, initial = x["lleno"], required=False)
 
 class anadirProductoForm(forms.ModelForm):
     class Meta:
@@ -89,6 +97,13 @@ class anadirLineaForm(forms.ModelForm):
         exclude = ['venta']
     def clean(self):
         cleaned_data = super(anadirLineaForm, self).clean()
+
+class anadirCampo2Form(forms.ModelForm):
+    class Meta:
+        model = CampoAdicional
+        fields = '__all__'
+    def clean(self):
+        cleaned_data = super(anadirCampo2Form, self).clean()
 
 class eliminarForm(forms.Form):
     eliminar = forms.BooleanField(required=False)

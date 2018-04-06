@@ -24,6 +24,7 @@
 				<li><a href="{% url 'catalogo' %}">Catalogo</a></li>
 				<li><a href="{% url 'clientes' %}">Clientes</a></li>
         <li><a href="{% url 'compras' %}">Compras</a></li>
+        <li><a href="{% url 'chart' %}">Graficas</a></li>
 			</ul>
 		</div>
 		<div id="contenido">
@@ -32,6 +33,7 @@
         {% csrf_token %}
         {{ form }}
         <button type="submit">Submit</button>
+        <a href="{%url 'anadirProveedor'%}"><img src="{% static 'add.png' %}" height="42" width="42" align="right"></img></a>
       </form>
       <br></br>
       <hr>
@@ -46,7 +48,6 @@
         {% endfor %}
         {% endifequal %}
 			</p>
-      <p><a href="{%url 'anadirProveedor'%}"><img src="{% static 'add.png' %}" height="42" width="42"></img></a></p>
 		</div>
 		<div id="footer">
 			<p>
