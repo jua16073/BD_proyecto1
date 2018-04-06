@@ -282,7 +282,7 @@ def eliminarCliente(request, id):
 
 def anadirCampo2(request):
     if request.method == 'GET':
-        return render(request, 'bdrepuestos/anadirProveedor.html', {'form': anadirCampo2Form()})
+        return render(request, 'bdrepuestos/anadirCampo2.html', {'form': anadirCampo2Form()})
     form = anadirCampo2Form(request.POST)
     if form.is_valid():
         x=connection.cursor()

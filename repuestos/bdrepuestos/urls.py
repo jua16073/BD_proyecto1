@@ -28,5 +28,5 @@ urlpatterns = [
 	path('login.html',views.login, name='login'),
 	path('ver',views.ver, name= 'ver'),
 	path('chart', views.chart1, name='chart'),
-	path('anadirCampo2.html',views.anadirCampo2, name= 'anadirCampo2')
+	path('anadirCampo2',views.anadirCampo2, name='anadirCampo2')
 ]
