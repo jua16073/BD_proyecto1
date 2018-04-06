@@ -434,7 +434,7 @@ def chart1(request):
 
     clientes_10= PivotDataPool(series=[{
         'options':{'source':Venta.objects.all(),
-        'categories':['id_Cliente'],
+        'categories':['cliente'],
         'top_n_per_cat':10},
         'terms':{
         'tot': Sum('total')
@@ -472,7 +472,8 @@ def chart1(request):
         datasource=ventas_data,
         series_options=[{
         'options':{ 'type': 'column',
-        'stacking': True},
+        'stacking': True,
+        'colorByPoint':True},
 
         'terms':['tot']
         }],
@@ -485,7 +486,8 @@ def chart1(request):
 
     cht2=PivotChart(
         datasource=cliente_data,
-        series_options=[{ 'options':{ 'type': 'column'},
+        series_options=[{ 'options':{ 'type': 'column',
+        'colorByPoint':True},
         'terms':['nums']
         }],
         chart_options={
@@ -498,7 +500,7 @@ def chart1(request):
     cht3=PivotChart(
         datasource=clientes_10,
         series_options=[{
-        'options':{'type': 'column', 'stacking': True},
+        'options':{'type': 'column', 'stacking': True, 'colorByPoint':True},
         'terms':
         ['tot']
         }],
@@ -510,7 +512,7 @@ def chart1(request):
     cht4=PivotChart(
         datasource=productos_10,
         series_options=[{
-        'options':{'type':'column'},
+        'options':{'type':'column', 'colorByPoint':True},
         'terms':
         ['cont']
         }],
