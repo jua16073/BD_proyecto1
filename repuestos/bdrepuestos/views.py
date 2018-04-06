@@ -231,9 +231,10 @@ def ver(request):
 
 
 def chart1(request):
+    x=connection.cursor()
     vend_data= DataPool(series=[{
     'options':{
-    'source': Vendedor.objects.all()
+    'source': Vendedor.objects.raw('SELECT * FROM bdrepuestos_vendedor')
     },
     'terms':[
     'nombre',
@@ -250,7 +251,7 @@ def chart1(request):
         }])
 
     producto_data=DataPool(series=[{
-        'options':{'source': Producto.objects.all(),
+        'options':{'source': Producto.objects.raw('SELECT * FROM bdrepuestos_producto'),
         },
         'terms':['nombre',
         'categoria',
@@ -271,12 +272,12 @@ def chart1(request):
         }])
 
     clientes_best= DataPool(series=[{
-        'options':{'source': Cliente.objects.all()},
+        'options':{'source': Cliente.objects.raw('SELECT * FROM bdrepuestos_cliente')},
         'terms':['nombre',
         'id']
         },
         {
-        'options':{'source': Venta.objects.all()},
+        'options':{'source': Venta.objects.raw('SELECT * FROM bdrepuestos_venta')},
         'terms':[
         'id_Cliente',
         'total'
