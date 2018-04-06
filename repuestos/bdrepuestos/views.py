@@ -70,7 +70,7 @@ def editarCliente(request, cliente_id):
         x.execute("UPDATE bdrepuestos_cliente SET nombre = '"+form.cleaned_data.get('nombre')+"', telefono = '"+form.cleaned_data.get('telefono')+"', dpi = '"+form.cleaned_data.get('dpi')+"', correo = '"+form.cleaned_data.get('correo')+"', tipo = '"+form.cleaned_data.get('tipo')+"', direccion = '"+form.cleaned_data.get('direccion')+"', nit = '"+form.cleaned_data.get('nit')+"', twitter = '"+form.cleaned_data.get('twitter')+"', fecha_de_comienzo = '"+str(form.cleaned_data.get('fecha_de_comienzo'))+"'::date WHERE bdrepuestos_cliente.id = "+str(cliente_id))
     else:
         return render(request, 'bdrepuestos/editarCliente.html', {'form': AnadirForm(request.POST, instance=inst, adicionales = c)})
-    return render(request, 'bdrepuestos/clientes.html', {'paso':0, 'form': ContactForm( modelo=0), 'things':Cliente.objects.all()})
+    return redirect(clientes)
 
 #Se a;ade un PRODUCTO a la base de datos
 def anadirProducto(request):
