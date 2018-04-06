@@ -1,0 +1,71 @@
+  {% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+
+
+    <title>Auto Repuestos Villeda</title>
+
+	<meta name="author" content="Rodrigo Alvarado" />
+	<meta name="description" content="Prueba para el proyecto que ya valio 20" />
+
+	<link rel="stylesheet" href="{% static 'style.css' %}">
+
+</head>
+<body>
+
+	<div id="todo">
+		<div id="titulo">
+			<h1><a href="{% url 'home' %}" id="logoLink">Auto Repuestos Villeda</a></h1>
+		</div>
+		<div id="menu">
+			<ul>
+        <li><a href="{% url 'home' %}">Ingresar compras</a></li>
+				<li><a href="{% url 'catalogo' %}">Catalogo</a></li>
+				<li><a href="{% url 'compras' %}">Compras</a></li>
+				<li><a href = "{% url 'resumenes' %}">Resumen</a></li>
+        <li><a href="{% url 'proveedores' %}">Proveedores</a></li>
+			</ul>
+		</div>
+		<div id="contenido">
+			<h2>Resumen</h2>
+      <p>
+        <form method="post" action="" novalidate>
+          {% csrf_token %}
+          {{ form }}
+          <button type="submit">Submit</button>
+        </form>
+      </p>
+      <br></br>
+      <hr>
+      <p>
+        {% for r in res1 %}
+            <p><a href="{%url 'resumenes' %}">Vendedor más chido {{ r.1 }} con {{r.0}} Quetzales</a></p>
+        {% endfor %}
+	</p>
+	 <p>
+	  	{% for r in res2 %}
+	  		<p><a href="{%url 'resumenes' %}">El Total de Ventas fue: {{r.0}} Quetzales</a></p>
+        {% endfor %}
+	</p>
+	<p>
+	  	{% for r in res3 %}
+	  		<p><a href="{%url 'resumenes' %}"> Existe/n {{r.0}} Cliente/s tipo {{r.1}} </a></p>
+        {% endfor %}
+		
+	  </p>
+	  <p>
+	  	{% for r in res4 %}
+	  		<p><a href="{%url 'resumenes' %}"> El producto más vendido es: {{r.1}}</a></p>
+        {% endfor %}
+		
+	  </p>
+		</div>
+		<div id="footer">
+			<p>
+				Desarrollado por: <a href="/" target="_blank">RRC</a>
+			</p>
+		</div>
+	</div>
+</body>
+</html>

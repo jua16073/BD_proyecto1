@@ -13,27 +13,16 @@
 {{ charts|load_charts:"cht,cht1,cht2,cht3,cht4" }}
 </head>
 <body>
-	<div id="todo">
-		<div id="menu">
-			<ul>
-				<li><a href="{% url 'home' %}">Ingresar Compras</a></li>
-				<li><a href="{% url 'clientes' %}">Clientes</a></li>
-				<li><a href="{% url 'compras' %}">Compras</a></li>
-        <li><a href="{% url 'proveedores' %}">Proveedores</a></li>
-        <li><a href="{% url 'catalogo' %}">Catalogo</a></li>
-			</ul>
-		</div>
-		<div id="contenido">
-			<h2>GRAFICAS</h2>
-			<div id='cht'> Chart will be rendered here </div>
-			<br><hr>
-			<div id='cht1'> Chart will be rendered here </div>
-			<br><hr>
-			<div id='cht2'> Chart will be rendered here </div>
-			<br><hr>
-			<div id='cht3'> Chart will be rendered here </div>
-			<br><hr>
-			<div id='cht4'> Chart will be rendered here </div>
-		</div>
-</div>
+	<h2>pls</h2>
+	<script type="text/javascript">
+		Highcharts.theme = {
+   colors: ['#ff8800', '#ffac4d', '#ffff80', '#dfff80', '#80dfff', '#809fff',
+      '#bf80ff', '#ff80df', '#ff8080']}
+      Highcharts.setOptions(Highcharts.theme);
+	</script>
+<div id='cht'> Chart will be rendered here </div>
+<div id='cht1'> Chart will be rendered here </div>
+<div id='cht2'> Chart will be rendered here </div>
+<div id='cht3'> Chart will be rendered here </div>
+<div id='cht4'> Chart will be rendered here </div>
 </body>

@@ -89,6 +89,8 @@ def anadirProducto(request):
     return render(request, 'bdrepuestos/repuestos.html', {'paso':0, 'form': ContactForm(modelo=2), 'things': Producto.objects.all()})
 
 
+
+
 #Se edita un PRODUCTO que ya este en la base de datos
 def editarProducto(request, producto_id):
     inst = get_object_or_404(Producto, pk=producto_id)
@@ -149,6 +151,51 @@ def home(request):
     else:
         return render(request, 'bdrepuestos/home.html', {'form': anadirVentaForm(request.POST)})
     return redirect(editarVenta, pls = local)
+
+
+def resumen():
+    x=connection.cursor()
+    try:
+        x.execute("SELECT MAX(total_ventas) FROM bdrepuestos_vendedor")
+        max = x.fetchone()[0]
+        x.execute("SELECT nombre,total_ventas FROM bdrepuestos_vendedor WHERE total_ventas="+str(max))
+        cosas = x.fetchall()
+    except ValueError:
+        cosas = Vendedor.objects.all()
+    return cosas
+
+def resumen1():
+    x=connection.cursor()
+    try:
+        x.execute("SELECT SUM(total_ventas) FROM bdrepuestos_vendedor")
+        cosas = x.fetchall()
+    except ValueError:
+        cosas = Vendedor.objects.all()
+    return cosas
+
+
+def resumen2():
+    x=connection.cursor()
+    try:
+        x.execute("SELECT COUNT(tipo),tipo FROM bdrepuestos_cliente GROUP BY tipo")
+        cosas = x.fetchall()
+    except ValueError:
+        cosas = Vendedor.objects.all()
+    return cosas
+
+def resumen3():
+    x=connection.cursor()
+    try:
+        x.execute("SELECT COUNT(l.producto_id),p.nombre FROM bdrepuestos_lineaventa l, bdrepuestos_producto p WHERE l.producto_id = p.id GROUP BY p.nombre ORDER BY COUNT(l.producto_id) DESC LIMIT 1")
+        cosas = x.fetchall()
+    except ValueError:
+        cosas = Vendedor.objects.all()
+    return cosas
+
+
+
+def resumenes(request):
+    return render(request, "bdrepuestos/resumenes.html",{'res1': resumen(),'res2':resumen1(),'res3': resumen2(), 'res4': resumen3()})
 
 def editarVenta(request, pls):
     try:
@@ -530,7 +577,8 @@ def chart1(request):
         datasource=ventas_data,
         series_options=[{
         'options':{ 'type': 'column',
-        'stacking': True},
+        'stacking': True,
+        'colorByPoint':True},
 
         'terms':['tot']
         }],
@@ -543,7 +591,8 @@ def chart1(request):
 
     cht2=PivotChart(
         datasource=cliente_data,
-        series_options=[{ 'options':{ 'type': 'column'},
+        series_options=[{ 'options':{ 'type': 'column',
+        'colorByPoint':True},
         'terms':['nums']
         }],
         chart_options={
@@ -556,7 +605,7 @@ def chart1(request):
     cht3=PivotChart(
         datasource=clientes_10,
         series_options=[{
-        'options':{'type': 'column', 'stacking': True},
+        'options':{'type': 'column', 'stacking': True, 'colorByPoint':True},
         'terms':
         ['tot']
         }],
@@ -568,7 +617,7 @@ def chart1(request):
     cht4=PivotChart(
         datasource=productos_10,
         series_options=[{
-        'options':{'type':'column'},
+        'options':{'type':'column', 'colorByPoint':True},
         'terms':
         ['cont']
         }],
