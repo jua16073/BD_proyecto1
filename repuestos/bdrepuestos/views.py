@@ -5,7 +5,8 @@ from .forms import ContactForm, AnadirForm, anadirProductoForm, ContactForm2
 from django.shortcuts import render, get_object_or_404
 from django.db import connection
 from django.contrib import messages
-from chartit import DataPool, Chart
+from chartit import DataPool, Chart, PivotChart, PivotDataPool
+from django.db.models import *
 
 
 #Se a;ade un CLIENTE a la base de datos
@@ -199,17 +200,21 @@ def detalle_compra(request, venta_id):
 
 
 def login(request):
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/login.html', {'form':ContactForm2()})
     form= ContactForm2(request.POST)
     return render(request,'./bdrepuestos/login.html', {'form': form})
 
 
 def ver(request):
+    if request.method == 'GET':
+        return render(request, 'bdrepuestos/login.html', {'form':ContactForm2()})
     form = ContactForm2(request.POST)
     if form.is_valid():
-        print(form.cleaned_data.get('contra'))
+        print(form.cleaned_data.get('contraseña'))
         x=connection.cursor()
         try:
-            x.execute("SELECT * FROM bdrepuestos_vendedor WHERE  nombre LIKE '"+form.cleaned_data.get('name')+"'AND contraseña LIKE '"+form.cleaned_data.get('contra')+"'")
+            x.execute("SELECT * FROM bdrepuestos_vendedor WHERE  nombre LIKE '"+form.cleaned_data.get('name')+"'AND contraseña LIKE '"+form.cleaned_data.get('contraseña')+"'")
             if(form.cleaned_data.get('name')!=''):
                 things=x.fetchall()
                 print (len(things))
@@ -226,7 +231,7 @@ def ver(request):
 
 
 def chart1(request):
-    ventas_data= DataPool(series=[{
+    vend_data= DataPool(series=[{
     'options':{
     'source': Vendedor.objects.all()
     },
@@ -237,11 +242,71 @@ def chart1(request):
     'contraseña']}
     ])
 
+    ventas_data=PivotDataPool(series=[{
+        'options':{'source': Venta.objects.all(),
+        'categories':['fecha_de_venta']},
+        'terms':{
+        'tot': Sum('total')}
+        }])
+
+    producto_data=DataPool(series=[{
+        'options':{'source': Producto.objects.all(),
+        },
+        'terms':['nombre',
+        'categoria',
+        'precio1',
+        'precio2',
+        'precio3',
+        'disponibilidad',
+        'marca',
+        'proveedor']
+        }])
+
+    cliente_data=PivotDataPool(series=[{
+        'options':{'source': Cliente.objects.all(),
+        'categories':['tipo']},
+        'terms':{
+        'nums': Count('nombre')
+        }
+        }])
+
+    clientes_best= DataPool(series=[{
+        'options':{'source': Cliente.objects.all()},
+        'terms':['nombre',
+        'id']
+        },
+        {
+        'options':{'source': Venta.objects.all()},
+        'terms':[
+        'id_Cliente',
+        'total'
+        ]
+        }])
+
+    clientes_10= PivotDataPool(series=[{
+        'options':{'source':Venta.objects.all(),
+        'categories':['id_Cliente'],
+        'top_n_per_cat':10},
+        'terms':{
+        'tot': Sum('total')
+        }
+        }])
+
+    productos_10=PivotDataPool(series=[{
+        'options':{'source':LineaVenta.objects.all(),
+        'categories':['producto'],
+        'top_n_per_cat':10},
+        'terms':{
+        'cont': Count('cantidad')
+        }
+        }])
+
+
     cht= Chart(
-    datasource= ventas_data,
+    datasource= vend_data,
     series_options=[{
     'options':{
-    'type':'line',
+    'type':'pie',
     'stacking': False},
     'terms':{
     'nombre':[
@@ -253,4 +318,56 @@ def chart1(request):
     'xAxis':{'text': 'Ventas'}
     }
     )
-    return render(request, 'bdrepuestos/cuadros.html',{'dataVendedor':cht})
+
+    cht1=PivotChart(
+        datasource=ventas_data,
+        series_options=[{
+        'options':{ 'type': 'column',
+        'stacking': True},
+
+        'terms':['tot']
+        }],
+        chart_options= {
+        'title':{
+        'text':'Venta por dia'
+        },
+        'xAxis':{'text':'Ventas'}
+        })
+
+    cht2=PivotChart(
+        datasource=cliente_data,
+        series_options=[{ 'options':{ 'type': 'column'},
+        'terms':['nums']
+        }],
+        chart_options={
+        'title':{
+        'text': 'Tipos de cliente'
+        },
+        'xAxis':{'text': 'Tipos de Clientes'}
+        })
+
+    cht3=PivotChart(
+        datasource=clientes_10,
+        series_options=[{
+        'options':{'type': 'column', 'stacking': True},
+        'terms':
+        ['tot']
+        }],
+        chart_options={
+        'title':{
+        'text':'Mejores Clientes'
+        }
+        })
+    cht4=PivotChart(
+        datasource=productos_10,
+        series_options=[{
+        'options':{'type':'column'},
+        'terms':
+        ['cont']
+        }],
+        chart_options={
+        'title':{
+        'text':'Productos mas Vendidos'
+        }
+        })
+    return render(request, 'bdrepuestos/cuadros.html',{'charts':[cht,cht1,cht2,cht3,cht4]})

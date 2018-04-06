@@ -62,7 +62,7 @@ class ContactForm2(forms.Form):
     name = forms.CharField(
         max_length=50
     )
-    contra= forms.CharField( max_length=50)
+    contraseña= forms.CharField( max_length=50)
 
     def clean(self):
         cleaned_data = super(ContactForm2, self).clean()
